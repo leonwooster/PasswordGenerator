@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Reflection.Emit;
+using System.Text;
 
 class Program
 {
@@ -10,6 +11,8 @@ class Program
         bool includeSpecialCharacters = true;        
 
         Console.WriteLine("Random Password Generator");
+
+Start:
 
         // Get user input
         Console.Write("Use Default values? (y/n)");
@@ -35,6 +38,14 @@ class Program
 
         // Display the generated password
         Console.WriteLine($"Generated Password: {password}");
+
+        Console.Write("Another one? (y/n)");
+        bool anotherOne = Console.ReadLine().ToLower() == "y";
+
+        if(anotherOne)
+        {
+            goto Start;
+        }
     }
 
     static string GeneratePassword(int length, bool includeAlphanumeric, bool includeCapitalLetters, bool includeSpecialCharacters)
