@@ -1,51 +1,85 @@
-﻿using System.Reflection.Emit;
+﻿using System;
 using System.Text;
 
 class Program
 {
     static void Main()
     {
-        int length = 8;
-        bool includeCapitalLetters = true;
-        bool includeAlphanumeric = true;
-        bool includeSpecialCharacters = true;        
-
         Console.WriteLine("Random Password Generator");
 
-Start:
+        bool generateAnother = true;
 
-        // Get user input
-        Console.Write("Use Default values? (y/n)");
-        bool useDefault = Console.ReadLine().ToLower() == "y";
-
-        if (!useDefault)
+        while (generateAnother)
         {
-            Console.Write("Enter password length: ");
-            length = int.Parse(Console.ReadLine());
+            GenerateAndDisplayPassword();
 
-            Console.Write("Include alphanumeric characters? (y/n): ");
-            includeAlphanumeric = Console.ReadLine().ToLower() == "y";
-
-            Console.Write("Include capital letters? (y/n): ");
-            includeCapitalLetters = Console.ReadLine().ToLower() == "y";
-
-            Console.Write("Include special characters? (y/n): ");
-            includeSpecialCharacters = Console.ReadLine().ToLower() == "y";
+            // Ask if the user wants to generate another password
+            Console.Write("Generate another password? (y/n): ");
+            generateAnother = Console.ReadLine().ToLower() == "y";
         }
+    }
 
-        // Generate random password
+    static void GenerateAndDisplayPassword()
+    {
+        // Set default values
+        int defaultLength = 12;
+        bool defaultIncludeAlphanumeric = true;
+        bool defaultIncludeCapitalLetters = true;
+        bool defaultIncludeSpecialCharacters = true;
+
+        // Ask if the user wants to use default values for all features
+        Console.Write("Use default values for all features? (y/n): ");
+        bool useDefaults = Console.ReadLine().ToLower() == "y";
+
+        // Get user input for password length
+        int length = useDefaults ? defaultLength : GetInput("Enter password length: ", defaultLength);
+
+        // Get user input for including alphanumeric characters
+        bool includeAlphanumeric = useDefaults ? defaultIncludeAlphanumeric : GetYesNoInput("Include alphanumeric characters? (y/n): ", defaultIncludeAlphanumeric);
+
+        // Get user input for including capital letters
+        bool includeCapitalLetters = useDefaults ? defaultIncludeCapitalLetters : GetYesNoInput("Include capital letters? (y/n): ", defaultIncludeCapitalLetters);
+
+        // Get user input for including special characters
+        bool includeSpecialCharacters = useDefaults ? defaultIncludeSpecialCharacters : GetYesNoInput("Include special characters? (y/n): ", defaultIncludeSpecialCharacters);
+
+        // Generate and display the password
         string password = GeneratePassword(length, includeAlphanumeric, includeCapitalLetters, includeSpecialCharacters);
-
-        // Display the generated password
         Console.WriteLine($"Generated Password: {password}");
+    }
 
-        Console.Write("Another one? (y/n)");
-        bool anotherOne = Console.ReadLine().ToLower() == "y";
-
-        if(anotherOne)
+    static int GetInput(string prompt, int defaultValue)
+    {
+        while (true)
         {
-            goto Start;
+            Console.Write($"{prompt} (default: {defaultValue}): ");
+            string input = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return defaultValue;
+            }
+
+            if (int.TryParse(input, out int result) && result > 0)
+            {
+                return result;
+            }
+
+            Console.WriteLine("Invalid input. Please enter a positive integer.");
         }
+    }
+
+    static bool GetYesNoInput(string prompt, bool defaultValue)
+    {
+        Console.Write($"{prompt} (default: {(defaultValue ? "y" : "n")}): ");
+        string input = Console.ReadLine().ToLower();
+
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return defaultValue;
+        }
+
+        return input == "y";
     }
 
     static string GeneratePassword(int length, bool includeAlphanumeric, bool includeCapitalLetters, bool includeSpecialCharacters)
